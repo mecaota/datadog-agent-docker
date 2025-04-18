@@ -1,0 +1,24 @@
+services:
+  datadog-agent:
+    image: datadog/agent:7.64.3
+    env_file:
+      - .env.local
+    pid: host
+    ports:
+      - '8126:8126'
+    environment:
+      - DD_APM_ENABLED=true
+      - DD_ENV=production
+      - DD_TRACE_STARTUP_LOGS=false
+      - DD_LOGS_ENABLED=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'agent health']
+      interval: 10s
+      retries: 10
+      start_period: 15s
+      timeout: 5s
